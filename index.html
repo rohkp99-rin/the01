@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>너에게 보내는 따뜻한 마음</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold-light: #f9e4b7;
+    --gold-main: #e6c27a;
+    --gold-deep: #b88a44;
+    --cream-text: #fdfaf3;
+    --warm-shadow: rgba(24, 18, 10, 0.55);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Gowun Batang', serif;
+    background-color: #161410;
+    color: var(--cream-text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 전체 배경 이미지 & 켄 번즈(Ken Burns) 은은한 줌 효과 */
+  .bg-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .bg-image {
+    width: 100%;
+    height: 100%;
+    background-image: url('a.jpg');
+    background-size: cover;
+    background-position: 42% 48%;
+    transform: scale(1.03);
+    animation: slowZoom 28s ease-in-out infinite alternate;
+    filter: brightness(0.84) contrast(1.04) saturate(1.05);
+  }
+
+  @keyframes slowZoom {
+    0% {
+      transform: scale(1.02) translate(0, 0);
+    }
+    100% {
+      transform: scale(1.11) translate(-1%, -1%);
+    }
+  }
+
+  /* 따뜻하고 고급스러운 비네팅 & 앰버 오버레이 */
+  .warm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    background:
+      radial-gradient(circle at 38% 45%, rgba(255, 224, 175, 0.08) 0%, rgba(28, 22, 14, 0.48) 65%, rgba(16, 12, 8, 0.78) 100%),
+      linear-gradient(180deg, rgba(22, 17, 11, 0.42) 0%, rgba(22, 17, 11, 0.18) 45%, rgba(18, 14, 9, 0.65) 100%);
+    pointer-events: none;
+  }
+
+  /* 은은한 빛줄기 (Sunbeams) */
+  .sunbeams {
+    position: fixed;
+    top: -25%;
+    left: -15%;
+    width: 140%;
+    height: 140%;
+    z-index: 3;
+    pointer-events: none;
+    overflow: hidden;
+    mix-blend-mode: screen;
+  }
+
+  .beam {
+    position: absolute;
+    top: -10%;
+    width: 24%;
+    height: 130%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 238, 198, 0.24) 0%,
+      rgba(255, 225, 168, 0.09) 45%,
+      rgba(255, 225, 168, 0) 100%
+    );
+    transform-origin: top center;
+    filter: blur(22px);
+    animation: beamSway 14s ease-in-out infinite alternate;
+  }
+
+  .beam:nth-child(1) {
+    left: 12%;
+    transform: rotate(-22deg);
+    animation-duration: 15s;
+    opacity: 0.7;
+  }
+
+  .beam:nth-child(2) {
+    left: 36%;
+    width: 30%;
+    transform: rotate(-16deg);
+    animation-duration: 19s;
+    animation-delay: -4s;
+    opacity: 0.85;
+  }
+
+  .beam:nth-child(3) {
+    left: 62%;
+    width: 20%;
+    transform: rotate(-11deg);
+    animation-duration: 17s;
+    animation-delay: -8s;
+    opacity: 0.6;
+  }
+
+  @keyframes beamSway {
+    0% {
+      opacity: 0.35;
+      transform: rotate(-20deg) translateX(-18px);
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0.45;
+      transform: rotate(-13deg) translateX(22px);
+    }
+  }
+
+  /* 떠오르는 하트 & 금빛 입자 캔버스 */
+  #ambientCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* 상단 우측 음악 컨트롤 버튼 */
+  .music-control {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(249, 228, 183, 0.38);
+    background: rgba(28, 22, 15, 0.42);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--gold-light);
+    font-family: 'Gowun Batang', serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    transition: all 0.35s ease;
+  }
+
+  .music-control:hover {
+    background: rgba(45, 35, 22, 0.62);
+    border-color: rgba(249, 228, 183, 0.72);
+    transform: translateY(-1px);
+  }
+
+  .music-control.playing {
+    border-color: rgba(249, 228, 183, 0.78);
+    box-shadow: 0 0 20px rgba(230, 194, 122, 0.28);
+  }
+
+  .equalizer {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 13px;
+    width: 14px;
+  }
+
+  .equalizer span {
+    display: block;
+    width: 2.5px;
+    height: 4px;
+    background-color: var(--gold-main);
+    border-radius: 2px;
+    transition: height 0.2s ease;
+  }
+
+  .music-control.playing .equalizer span:nth-child(1) {
+    animation: eqBar 0.9s ease-in-out infinite alternate;
+  }
+  .music-control.playing .equalizer span:nth-child(2) {
+    animation: eqBar 0.65s ease-in-out infinite alternate 0.2s;
+  }
+  .music-control.playing .equalizer span:nth-child(3) {
+    animation: eqBar 0.8s ease-in-out infinite alternate 0.4s;
+  }
+
+  @keyframes eqBar {
+    0% { height: 3px; }
+    100% { height: 13px; }
+  }
+
+  /* 메인 카드 컨테이너 */
+  .stage {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+
+  .letter-card {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    max-height: 86vh;
+    padding: 44px 38px 38px;
+    border-radius: 22px;
+    background: linear-gradient(
+      165deg,
+      rgba(32, 25, 17, 0.44) 0%,
+      rgba(22, 17, 12, 0.56) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(249, 228, 183, 0.28);
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.45),
+      inset 0 0 36px rgba(249, 228, 183, 0.06);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .letter-card::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 카드 내부 얇은 골드 헤어라인 테두리 */
+  .letter-card::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border-radius: 15px;
+    border: 1px solid rgba(249, 228, 183, 0.16);
+    pointer-events: none;
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(-22px);
+    animation: cascadeDown 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+  }
+
+  .card-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-main);
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 1.48rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 0.06em;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  }
+
+  .divider {
+    width: 64px;
+    height: 1px;
+    margin: 14px auto 0;
+    background: linear-gradient(90deg, transparent, var(--gold-main), transparent);
+  }
+
+  /* 위에서 아래로 순차적으로 내려오듯 나타나는 편지 문장 */
+  .letter-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    line-height: 1.92;
+    font-size: 1.03rem;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 10px var(--warm-shadow);
+  }
+
+  .letter-line {
+    opacity: 0;
+    transform: translateY(-24px);
+    filter: blur(2px);
+    animation: cascadeDown 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(0.65s + var(--order) * 0.42s);
+  }
+
+  .letter-line.highlight {
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  @keyframes cascadeDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-24px);
+      filter: blur(3px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .card-footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(249, 228, 183, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    opacity: 0;
+    transform: translateY(-16px);
+    animation: cascadeDown 1.3s cubic-bezier(0.22, 1, 0.36, 1) 4.1s forwards;
+  }
+
+  .replay-btn {
+    background: transparent;
+    border: 1px solid rgba(249, 228, 183, 0.32);
+    color: var(--gold-light);
+    font-family: 'Gowun Batang', serif;
+    font-size: 0.8rem;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .replay-btn:hover {
+    background: rgba(249, 228, 183, 0.14);
+    border-color: var(--gold-main);
+  }
+
+  /* 모바일 반응형 최적화 */
+  @media (max-width: 600px) {
+    .bg-image {
+      background-position: 43% 44%;
+    }
+
+    .music-control {
+      top: 14px;
+      right: 14px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+    }
+
+    .stage {
+      padding: 64px 16px 20px;
+      align-items: flex-end;
+    }
+
+    .letter-card {
+      max-height: 76vh;
+      padding: 30px 22px 26px;
+      border-radius: 18px;
+      background: linear-gradient(
+        175deg,
+        rgba(28, 22, 15, 0.48) 0%,
+        rgba(18, 14, 10, 0.68) 100%
+      );
+    }
+
+    .card-title {
+      font-size: 1.24rem;
+    }
+
+    .letter-body {
+      gap: 12px;
+      font-size: 0.93rem;
+      line-height: 1.82;
+    }
+
+    .card-footer {
+      margin-top: 20px;
+      font-size: 0.84rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 전체 배경 이미지 -->
+  <div class="bg-wrapper">
+    <div class="bg-image" role="img" aria-label="초원 위의 하얀 강아지"></div>
+  </div>
+
+  <!-- 따뜻한 비네팅 오버레이 -->
+  <div class="warm-overlay"></div>
+
+  <!-- 은은한 빛줄기 효과 -->
+  <div class="sunbeams" aria-hidden="true">
+    <div class="beam"></div>
+    <div class="beam"></div>
+    <div class="beam"></div>
+  </div>
+
+  <!-- 떠오르는 하트 & 금빛 입자 -->
+  <canvas id="ambientCanvas" aria-hidden="true"></canvas>
+
+  <!-- 음악 켜기/끄기 버튼 -->
+  <button type="button" id="musicBtn" class="music-control" aria-pressed="false">
+    <span class="equalizer" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <span id="musicLabel">음악 켜기</span>
+  </button>
+
+  <!-- 메인 편지 카드 -->
+  <main class="stage">
+    <article class="letter-card" id="letterCard">
+      <header class="card-header">
+        <p class="card-subtitle">A Warm Letter For You</p>
+        <h1 class="card-title">초원의 햇살을 닮은 너에게</h1>
+        <div class="divider"></div>
+      </header>
+
+      <div class="letter-body" id="letterBody">
+        <p class="letter-line" style="--order: 0;">
+          푸른 풀잎 사이로 스며드는 포근한 햇살처럼,<br>
+          너는 언제나 내 하루의 가장 따뜻한 자리였어.
+        </p>
+        <p class="letter-line" style="--order: 1;">
+          말없이 바라보는 맑은 눈빛 하나만으로도<br>
+          지쳤던 마음이 눈 녹듯 잔잔해지곤 해.
+        </p>
+        <p class="letter-line" style="--order: 2;">
+          네가 내 곁에 머물러 준 모든 계절이<br>
+          내 삶에서 가장 빛나는 기적이었음을 기억해.
+        </p>
+        <p class="letter-line highlight" style="--order: 3;">
+          오늘도, 그리고 앞으로 걸어갈 모든 날에도<br>
+          변함없이 온 마음을 다해 사랑해.
+        </p>
+      </div>
+
+      <footer class="card-footer">
+        <span>언제나 네 곁에서, 진심을 담아</span>
+        <button type="button" class="replay-btn" id="replayBtn">다시 읽기</button>
+      </footer>
+    </article>
+  </main>
+
+<script>
+  /* 1. 하트 및 따뜻한 금빛 입자 파티클 애니메이션 */
+  (function initParticles() {
+    const canvas = document.getElementById('ambientCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = Math.min(34, Math.floor(width / 28));
+
+    function createParticle(initial) {
+      const isHeart = Math.random() < 0.42;
+      return {
+        x: Math.random() * width,
+        y: initial ? Math.random() * height : height + 20 + Math.random() * 60,
+        size: isHeart ? (7 + Math.random() * 7) : (1.5 + Math.random() * 2.5),
+        speedY: 0.25 + Math.random() * 0.45,
+        swayAmp: 0.4 + Math.random() * 0.8,
+        swayFreq: 0.008 + Math.random() * 0.012,
+        phase: Math.random() * Math.PI * 2,
+        alpha: 0.18 + Math.random() * 0.36,
+        isHeart
+      };
+    }
+
+    for (let i = 0; i < count; i++) {
+      particles.push(createParticle(true));
+    }
+
+    function drawHeart(x, y, size, alpha) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      ctx.moveTo(0, topCurveHeight);
+      ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+      ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, (size + topCurveHeight) / 1.35, 0, size);
+      ctx.bezierCurveTo(0, (size + topCurveHeight) / 1.35, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+      ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+      ctx.closePath();
+
+      const grad = ctx.createRadialGradient(0, size * 0.4, 1, 0, size * 0.4, size);
+      grad.addColorStop(0, `rgba(255, 224, 198, ${alpha})`);
+      grad.addColorStop(1, `rgba(242, 178, 168, ${alpha * 0.45})`);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.y -= p.speedY;
+        p.phase += p.swayFreq;
+        const currentX = p.x + Math.sin(p.phase) * 18 * p.swayAmp;
+
+        if (p.isHeart) {
+          drawHeart(currentX, p.y, p.size, p.alpha);
+        } else {
+          ctx.beginPath();
+          ctx.arc(currentX, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 236, 188, ${p.alpha * 1.15})`;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = 'rgba(255, 220, 150, 0.6)';
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        if (p.y < -30) {
+          particles[i] = createParticle(false);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  })();
+
+  /* 2. Web Audio API 기반 잔잔한 오르골/피아노 감성 멜로디 생성기 (외부 파일 불필요) */
+  (function initMusicBox() {
+    const musicBtn = document.getElementById('musicBtn');
+    const musicLabel = document.getElementById('musicLabel');
+    let audioCtx = null;
+    let isPlaying = false;
+    let timerId = null;
+    let step = 0;
+
+    // 따뜻하고 서정적인 F Major / D Minor 아르페지오 멜로디 (주파수 Hz)
+    const melody = [
+      349.23, 440.00, 523.25, 659.25, 587.33, 523.25, 440.00, 392.00, // Fmaj7
+      293.66, 349.23, 440.00, 523.25, 493.88, 440.00, 392.00, 329.63, // Dm7
+      233.08, 293.66, 349.23, 440.00, 523.25, 440.00, 392.00, 349.23, // Bbmaj7
+      261.63, 329.63, 392.00, 493.88, 523.25, 440.00, 392.00, 329.63  // C6
+    ];
+
+    const bassNotes = {
+      0: 174.61,  // F3
+      8: 146.83,  // D3
+      16: 116.54, // Bb2
+      24: 130.81  // C3
+    };
+
+    function playTone(freq, duration, volume, type = 'sine') {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+
+      const osc = audioCtx.createOscillator();
+      const overtone = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const overtoneGain = audioCtx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+
+      // 오르골 특유의 맑은 배음 추가
+      overtone.type = 'sine';
+      overtone.frequency.setValueAtTime(freq * 2, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(volume, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      overtoneGain.gain.setValueAtTime(0.0001, now);
+      overtoneGain.gain.exponentialRampToValueAtTime(volume * 0.22, now + 0.02);
+      overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.55);
+
+      osc.connect(gain);
+      overtone.connect(overtoneGain);
+      gain.connect(audioCtx.destination);
+      overtoneGain.connect(audioCtx.destination);
+
+      osc.start(now);
+      overtone.start(now);
+      osc.stop(now + duration + 0.05);
+      overtone.stop(now + duration + 0.05);
+    }
+
+    function tick() {
+      if (!isPlaying) return;
+      const idx = step % melody.length;
+      playTone(melody[idx], 2.2, 0.065, 'sine');
+
+      if (bassNotes[idx] !== undefined) {
+        playTone(bassNotes[idx], 3.8, 0.045, 'triangle');
+      }
+
+      step++;
+      timerId = setTimeout(tick, 620);
+    }
+
+    function startMusic() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      isPlaying = true;
+      musicBtn.classList.add('playing');
+      musicBtn.setAttribute('aria-pressed', 'true');
+      musicLabel.textContent = '음악 끄기';
+      tick();
+    }
+
+    function stopMusic() {
+      isPlaying = false;
+      clearTimeout(timerId);
+      musicBtn.classList.remove('playing');
+      musicBtn.setAttribute('aria-pressed', 'false');
+      musicLabel.textContent = '음악 켜기';
+    }
+
+    musicBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        stopMusic();
+      } else {
+        startMusic();
+      }
+    });
+  })();
+
+  /* 3. 편지 애니메이션 다시 보기 기능 */
+  document.getElementById('replayBtn').addEventListener('click', () => {
+    const card = document.getElementById('letterCard');
+    const animatedEls = card.querySelectorAll('.card-header, .letter-line, .card-footer');
+    animatedEls.forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth; // Reflow 트리거
+      el.style.animation = '';
+    });
+  });
+</script>
+</body>
+</html>
